@@ -20,11 +20,6 @@ jobs:
                 BATCH=$(( $BLOCK-$BLOCK%100 ))
                 #BLOCK_COUNT=$( $TIP > b ? $TIP : b )
 
-                echo $LATEST_RANGE_FILE
-                echo $LATEST_BLOCK
-                echo $BLOCK
-                echo $BATCH
-
                 echo "batch=${BATCH}" >> "$GITHUB_OUTPUT"
                 echo "block=${BLOCK}" >> "$GITHUB_OUTPUT"
                 echo "blocks=[${BLOCK}]" >> "$GITHUB_OUTPUT"
