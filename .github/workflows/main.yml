@@ -20,12 +20,11 @@ jobs:
                 BATCH=$BLOCK-$BLOCK%100
                 #BLOCK_COUNT=$( $TIP > b ? $TIP : b )
         
-                echo "block=${BLOCK}" >> $GITHUB_OUTPUT
                 echo "batch=${BATCH}" >> $GITHUB_OUTPUT
                 echo "blocks=[${LATEST_BLOCK}]" >> $GITHUB_OUTPUT
         outputs:
-            blocks: ${{ steps.variables.outputs.block }}
             batch: ${{ steps.variables.outputs.batch }}
+            blocks: ${{ steps.variables.outputs.blocks }}
 
     prove:
         runs-on: ubuntu-latest
@@ -33,7 +32,7 @@ jobs:
         strategy:
             matrix:
                 prover: [risc0]
-                block: fromJson( ${{ needs.prepare.outputs.blocks }})
+                block: fromJson(${{ needs.prepare.outputs.blocks }})
         defaults:
             run:
                 working-directory: provers/${{ matrix.prover }}
