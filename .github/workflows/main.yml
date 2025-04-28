@@ -61,5 +61,6 @@ jobs:
                 RESULT=`make prove`
                 FILE="assets/proofs/${{needs.prepare.outputs.batch}}.json"
                 
+                touch ${FILE}
                 cat <<< $(jq '."${{ needs.prepare.outputs.block }}".proofs.risc0="${RESULT}"' ${FILE}) > ${FILE}
               shell: bash
