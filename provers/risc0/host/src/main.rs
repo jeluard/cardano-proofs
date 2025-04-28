@@ -43,15 +43,7 @@ fn main() {
     // extract the receipt.
     let receipt = prove_info.receipt;
 
-    // TODO: Implement code for retrieving receipt journal here.
-//println!("Receipt: {:?}", receipt);
-    // For example:
-    let _output: String = receipt.journal.decode().unwrap();
+    let output: String = receipt.journal.decode().unwrap();
 
-    println!("Journal: {:?}", receipt.journal.bytes.len());
-    // The receipt was verified at the end of proving, but the below code is an
-    // example of how someone else could verify this receipt.
-    receipt
-        .verify(GUEST_ID)
-        .unwrap();
+    println!("{}", output);
 }
