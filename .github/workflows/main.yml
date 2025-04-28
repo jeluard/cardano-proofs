@@ -1,0 +1,25 @@
+name: Prove blocks
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+jobs:
+    prove:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                prover: [risc0]
+        defaults:
+            run:
+                working-directory: provers/${{ matrix.prover }}
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Setup
+              run: make setup
+              shell: bash
+
+            - name: Prove
+              run: make prove
+              shell: bash
