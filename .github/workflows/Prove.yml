@@ -25,7 +25,7 @@ jobs:
                 BLOCK_TO_PROVE_CBOR=$( curl -X POST "https://preprod.koios.rest/api/v1/block_tx_cbor" \
                   -H 'accept: application/json' \
                   -H 'content-type: application/json' \
-                  -d '{"_block_hashes":["${BLOCK_TO_PROVE_HASH}"]}' | jq -r '.[0].cbor')
+                  -d '{"_block_hashes":[${BLOCK_TO_PROVE_HASH}]}' | jq -r '.[0].cbor')
                 echo $BLOCK_TO_PROVE_CBOR
                 echo "batch=${BATCH}" >> "$GITHUB_OUTPUT"
                 echo "blocks=[{"height": ${BLOCK_TO_PROVE}, "cbor": ${BLOCK_TO_PROVE_CBOR}]" >> "$GITHUB_OUTPUT"
