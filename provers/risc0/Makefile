@@ -4,4 +4,4 @@ setup:
 	cargo build --release
 
 prove:
-	RUST_LOG="[executor]=info" cargo run --release
+	@RUST_LOG="[executor]=info" cargo run --release
