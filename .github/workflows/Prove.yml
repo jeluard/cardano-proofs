@@ -20,10 +20,7 @@ jobs:
                 BLOCK_SAMPLING=100 # Create proofs for every BLOCK_SAMPLING blocks
                 BLOCKS_PER_RANGE=100 # Range files contain BLOCKS_PER_RANGE non-continuous blocks
                 BLOCK_TO_PROVE=$(( $TIP - ( $TIP % $BLOCK_SAMPLING ) ))
-                BATCH=$(( $BLOCK_TO_PROVE - ( $BLOCK_TO_PROVE % $BLOCKS_PER_RANGE ) ))
-
-                echo $BLOCK_TO_PROVE
-                echo $BATCH
+                BATCH=$(( $TIP - ( $TIP % ( $BLOCKS_PER_RANGE * $BLOCK_SAMPLING ) ) ))
 
                 echo "batch=${BATCH}" >> "$GITHUB_OUTPUT"
                 echo "blocks=[${BLOCK_TO_PROVE}]" >> "$GITHUB_OUTPUT"
