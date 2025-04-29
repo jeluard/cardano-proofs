@@ -16,7 +16,9 @@ jobs:
                 LATEST_RANGE_FILE=$( ls assets/proofs/* | sort -r | head -n 1 )
                 LATEST_BLOCK=$( jq 'keys|last|tonumber' $LATEST_RANGE_FILE )
                 BLOCK=$( curl -H "project_id: ${{secrets.BLOCKFROST_API_KEY}}" https://cardano-preprod.blockfrost.io/api/v0/blocks/latest | jq -r '.height' )
-                BATCH=$(( $BLOCK-$BLOCK%100 ))
+                BLOCK_SAMPLING=100
+                BLOCK_PER_BATCH=100
+                BATCH_SIZE=$(( ($BLOCK - $BLOCK % $BLOCK_SAMPLING) * $BLOCK_SAMPLING ))
                 #BLOCK_COUNT=$( $TIP > b ? $TIP : b )
 
                 echo "batch=${BATCH}" >> "$GITHUB_OUTPUT"
@@ -55,8 +57,11 @@ jobs:
                 RESULT=`make prove`
                 FILE="../../assets/proofs/${{needs.prepare.outputs.batch}}.json"
                 
-                mkdir -p $(dirname ${FILE})
-                touch ${FILE}
+                git pull # Make sure we work on uptodate files
+                # Create an empty JSON file the first time
+                mkdir -p $(dirname ${FILE}) 
+                echo "{}" > ${FILE}
+                # Update the JSON with new proof
                 cat <<< $(jq '."${{ needs.prepare.outputs.block }}".proofs.${{ matrix.prover }}="${RESULT}"' ${FILE}) > ${FILE}
               shell: bash
 
