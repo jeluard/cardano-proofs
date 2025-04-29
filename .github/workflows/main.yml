@@ -64,7 +64,7 @@ jobs:
                 mkdir -p $(dirname ${FILE}) 
                 echo "{}" > ${FILE}
                 # Update the JSON with new proof
-                cat <<< $(jq '."${{ needs.prepare.outputs.block }}".proofs.${{ matrix.prover }}="${RESULT}"' ${FILE}) > ${FILE}
+                cat <<< $(jq --arg result ${RESULT} '."${{ needs.prepare.outputs.block }}".proofs.${{ matrix.prover }}="$result"' ${FILE}) > ${FILE}
               shell: bash
 
             - name: Commit changes
