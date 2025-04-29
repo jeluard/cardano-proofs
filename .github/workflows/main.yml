@@ -14,19 +14,20 @@ jobs:
             - id: variables
               run: |
                 LATEST_RANGE_FILE=$( ls assets/proofs/* | sort -r | head -n 1 )
-                LATEST_BLOCK=$( jq 'keys|last|tonumber' $LATEST_RANGE_FILE )
-                BLOCK=$( curl -H "project_id: ${{secrets.BLOCKFROST_API_KEY}}" https://cardano-preprod.blockfrost.io/api/v0/blocks/latest | jq -r '.height' )
-                BLOCK_SAMPLING=100
-                BLOCK_PER_BATCH=100
-                BATCH=$(( ($BLOCK - $BLOCK % $BLOCK_SAMPLING) * $BLOCK_SAMPLING ))
+                LATEST_PROVED_BLOCK=$( jq 'keys|last|tonumber' $LATEST_RANGE_FILE )
+                TIP=$( curl -H "project_id: ${{secrets.BLOCKFROST_API_KEY}}" https://cardano-preprod.blockfrost.io/api/v0/blocks/latest | jq -r '.height' )
+                
+                BLOCK_SAMPLING=100 # Create proofs for every BLOCK_SAMPLING blocks
+                BLOCKS_PER_RANGE=100 # Range files contain BLOCKS_PER_RANGE non-continuous blocks
+                BLOCK_TO_PROVE=$(( $TIP - ( $TIP % $BLOCK_SAMPLING ) ))
+                BATCH=$(( $BLOCK_TO_PROVE - ( $BLOCK_TO_PROVE % $BLOCKS_PER_RANGE ) ))
                 #BLOCK_COUNT=$( $TIP > b ? $TIP : b )
 
                 echo "batch=${BATCH}" >> "$GITHUB_OUTPUT"
-                echo "block=${BLOCK}" >> "$GITHUB_OUTPUT"
-                echo "blocks=[${BLOCK}]" >> "$GITHUB_OUTPUT"
+                echo "block=${BLOCK_TO_PROVE}" >> "$GITHUB_OUTPUT"
+                echo "blocks=[${BLOCK_TO_PROVE}]" >> "$GITHUB_OUTPUT"
         outputs:
             batch: ${{ steps.variables.outputs.batch }}
-            block: ${{ steps.variables.outputs.block }}
             blocks: ${{ steps.variables.outputs.blocks }}
 
     prove:
@@ -64,16 +65,16 @@ jobs:
                 mkdir -p $(dirname ${FILE}) 
                 echo "{}" > ${FILE}
                 # Update the JSON with new proof
-                cat <<< $(jq --arg result ${RESULT} '."${{ needs.prepare.outputs.block }}".proofs.${{ matrix.prover }}="$result"' ${FILE}) > ${FILE}
+                cat <<< $(jq --arg result ${RESULT} '."${{ matrix.block }}".proofs.${{ matrix.prover }}="$result"' ${FILE}) > ${FILE}
               shell: bash
 
             - name: Commit changes
               env: 
-                CI_COMMIT_MESSAGE: "chore: added proof for block ${{ needs.prepare.outputs.block }}"
+                CI_COMMIT_MESSAGE: "chore: added proof for block ${{ matrix.block }}"
                 CI_COMMIT_AUTHOR: Continuous Proving
               run: |
                 git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
                 git config --global user.email "username@users.noreply.github.com"
-                git add ../../assets/proofs/${{needs.prepare.outputs.batch}}.json
+                git add ../../assets/proofs/*
                 git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
                 git push
