@@ -3,7 +3,7 @@ name: Deploy static content to Pages
 
 on:
   workflow_run:
-    workflows: ["prove"]
+    workflows: ["Prove blocks"]
     types:
       - completed
   push:
