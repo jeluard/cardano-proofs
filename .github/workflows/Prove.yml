@@ -22,6 +22,11 @@ jobs:
                 BLOCK_TO_PROVE=$(( $TIP - ( $TIP % $BLOCK_SAMPLING ) ))
                 BLOCK_TO_PROVE_HASH=$( curl -H "project_id: ${{secrets.BLOCKFROST_API_KEY}}" https://cardano-preprod.blockfrost.io/api/v0/blocks/${BLOCK_TO_PROVE} | jq -r '.hash' )
                 BATCH=$(( $TIP - ( $TIP % ( $BLOCKS_PER_RANGE * $BLOCK_SAMPLING ) ) ))
+                echo $BLOCK_TO_PROVE_HASH
+                curl -X POST "https://preprod.koios.rest/api/v1/block_tx_cbor" \
+                  -H 'accept: application/json' \
+                  -H 'content-type: application/json' \
+                  -d '{"_block_hashes":[${BLOCK_TO_PROVE_HASH}]}'
                 BLOCK_TO_PROVE_CBOR=$( curl -X POST "https://preprod.koios.rest/api/v1/block_tx_cbor" \
                   -H 'accept: application/json' \
                   -H 'content-type: application/json' \
