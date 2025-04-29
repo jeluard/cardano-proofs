@@ -64,7 +64,7 @@ jobs:
                 # Create an empty JSON file the first time
                 mkdir -p $(dirname ${FILE}) 
                 echo "{}" > ${FILE}
-                ln -s ${FILE} ../../assets/proofs/latest.json
+                ln -sf ${FILE} ../../assets/proofs/latest.json
 
                 # Update the JSON with new proof
                 cat <<< $(jq --arg result ${RESULT} '."${{ matrix.block }}".proofs.${{ matrix.prover }}=$result' ${FILE}) > ${FILE}
