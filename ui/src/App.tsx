@@ -5,7 +5,20 @@ function App() {
   return (
     <>
       <h1>Blocks</h1>
-      <div>{Object.keys(latestProofs)}</div>
+      <table>
+      {Object.entries(latestProofs).map(([blockNumber, {proofs}]) =>
+        <tr>
+          <td>{blockNumber}</td>
+          <td>
+            {Object.entries(proofs).map(([prover, proof]) => (
+              <>
+                <span onClick={() => alert(proof)}>{prover}</span>
+              </>
+            ))}
+          </td>
+        </tr>
+      )}
+    </table>
     </>
   )
 }
