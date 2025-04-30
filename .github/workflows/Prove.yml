@@ -14,7 +14,7 @@ jobs:
             - id: variables
               run: |
                 LATEST_RANGE_FILE=$( ls assets/proofs/* | sort -r | head -n 1 )
-                LATEST_PROVED_BLOCK=$( jq 'keys|last|tonumber' $LATEST_RANGE_FILE )
+                LATEST_PROVED_BLOCK=$( jq 'keys|last|tonumber? // .' $LATEST_RANGE_FILE )
                 TIP=$( curl -H "project_id: ${{secrets.BLOCKFROST_API_KEY}}" https://cardano-preprod.blockfrost.io/api/v0/blocks/latest | jq -r '.height' )
                 
                 BLOCK_SAMPLING=100 # Create proofs for every BLOCK_SAMPLING blocks
