@@ -70,9 +70,7 @@ jobs:
                 git pull
 
                 # Create an empty JSON file the first time
-                mkdir -p $(dirname ${FILE}) 
-                echo "{}" > ${FILE}
-                ln -sf ${FILE} ../../assets/proofs/latest.json
+                [ ! -f "$FILE" ] && mkdir -p $(dirname ${FILE}) && echo "{}" > ${FILE} && ln -sf ${FILE} ../../assets/proofs/latest.json
 
                 # Update the JSON with new proof
                 cat <<< $(jq --arg proof ${PROOF} '."${{ matrix.block.number }}".proofs.${{ matrix.prover }}+=$proof' ${FILE}) > ${FILE}
