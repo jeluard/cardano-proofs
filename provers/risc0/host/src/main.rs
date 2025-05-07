@@ -24,12 +24,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
-    let hash = std::env::get("BLOCK_HASH").unwrap();
+    let hash = std::env::var("BLOCK_HASH").unwrap();
     let hash = hex::decode(hash).unwrap();
     let mut peer_client = PeerClient::connect("preprod-node.play.dev.cardano.org:3001", 1).await?;
     let client = peer_client.blockfetch();
-    let slot = std::env::get("BLOCK_SLOT").unwrap();
-    let raw_block = client.fetch_single(Point::Specific(slot, hash)).await?;
+    let slot = std::env::var("BLOCK_SLOT").unwrap();
+    let raw_block = client.fetch_single(Point::Specific(slot.parse()?, hash)).await?;
 
     let env = ExecutorEnv::builder()
         .write(&raw_block)

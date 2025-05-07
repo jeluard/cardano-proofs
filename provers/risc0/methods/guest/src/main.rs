@@ -9,7 +9,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let block = parse_block(&raw_block[..])?;
     let inputs = BTreeMap::new(); 
-    let validity = rules::validate_block(
+    let _validity = rules::validate_block(
         context::DefaultValidationContext::new(inputs),
         ProtocolParameters::default(),
         block,
