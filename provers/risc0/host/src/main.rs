@@ -24,18 +24,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
-    let hash = std::env::var("BLOCK_HASH").unwrap();
-    let hash = hex::decode(hash).unwrap();
+    let hash = std::env::var("BLOCK_HASH")?;
+    let hash = hex::decode(hash)?;
     let mut peer_client = PeerClient::connect("preprod-node.play.dev.cardano.org:3001", 1).await?;
     let client = peer_client.blockfetch();
-    let slot = std::env::var("BLOCK_SLOT").unwrap();
+    let slot = std::env::var("BLOCK_SLOT")?;
     let raw_block = client.fetch_single(Point::Specific(slot.parse()?, hash)).await?;
 
     let env = ExecutorEnv::builder()
-        .write(&raw_block)
-        .unwrap()
-        .build()
-        .unwrap();
+        .write(&raw_block)?
+        .build()?;
 
     // Obtain the default prover.
     let prover = default_prover();
@@ -43,15 +41,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Proof information by proving the specified ELF binary.
     // This struct contains the receipt along with statistics about execution of the guest
     let prove_info = prover
-        .prove(env, GUEST_ELF)
-        .unwrap();
+        .prove(env, GUEST_ELF)?;
 
     // extract the receipt.
     let receipt = prove_info.receipt;
 
-    let output: String = receipt.journal.decode().unwrap();
+    let output: String = receipt.journal.decode()?;
 
-    println!("{}", receipt);
+    println!("{:?}", output);
 
     Ok(())
 }
