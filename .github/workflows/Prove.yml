@@ -59,7 +59,7 @@ jobs:
               run: |
                 export BLOCK_SLOT=${{ matrix.block.slot }}
                 export BLOCK_HASH=${{ matrix.block.hash }}
-                RESULT=`make prove`
+                PROOF=`make prove`
                 FILE="../../assets/proofs/${{needs.prepare.outputs.batch}}.json"
 
                 # Make sure we work on uptodate files
@@ -71,7 +71,7 @@ jobs:
                 ln -sf ${FILE} ../../assets/proofs/latest.json
 
                 # Update the JSON with new proof
-                cat <<< $(jq --arg number ${{matrix.block.number}} '."${{ matrix.block }}".proofs.${{ matrix.prover }}+=$number' ${FILE}) > ${FILE}
+                cat <<< $(jq --arg proof ${PROOF} '."${{ matrix.block.number }}".proofs.${{ matrix.prover }}+=$proof' ${FILE}) > ${FILE}
               shell: bash
 
             - name: Commit changes

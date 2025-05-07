@@ -51,7 +51,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let output: String = receipt.journal.decode().unwrap();
 
-    println!("{}", output);
+    println!("{}", receipt);
 
     Ok(())
 }
