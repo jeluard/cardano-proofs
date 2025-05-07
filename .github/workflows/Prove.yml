@@ -4,6 +4,10 @@ on:
   schedule:
     - cron: "0 * * * *"
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
     prepare:
         runs-on: ubuntu-latest
@@ -76,7 +80,7 @@ jobs:
 
             - name: Commit changes
               env: 
-                CI_COMMIT_MESSAGE: "chore: added proof for block ${{ matrix.block }} in batch ${{ needs.prepare.outputs.batch }} for ${{ matrix.prover }}"
+                CI_COMMIT_MESSAGE: "chore: added proof for block ${{ matrix.block.number }} in batch ${{ needs.prepare.outputs.batch }} for ${{ matrix.prover }}"
                 CI_COMMIT_AUTHOR: Continuous Proving
               run: |
                 git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
