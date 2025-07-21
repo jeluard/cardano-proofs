@@ -2,8 +2,7 @@
 // The ELF is used for proving and the ID is used for verification.
 use methods::GUEST_ELF;
 use risc0_zkvm::{default_prover, ExecutorEnv};
-
-use pallas_network::{facades::PeerClient, miniprotocols::Point};
+use cardano_proofs_shared::get_block;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,13 +23,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
-    let hash = std::env::var("BLOCK_HASH")?;
-    let hash = hex::decode(hash)?;
-    let mut peer_client = PeerClient::connect("preprod-node.play.dev.cardano.org:3001", 1).await?;
-    let client = peer_client.blockfetch();
-    let slot = std::env::var("BLOCK_SLOT")?;
-    let raw_block = client.fetch_single(Point::Specific(slot.parse()?, hash)).await?;
-
+    let raw_block = get_block().await?;
     let env = ExecutorEnv::builder()
         .write(&raw_block)?
         .build()?;

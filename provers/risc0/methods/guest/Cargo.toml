@@ -6,6 +6,6 @@ edition = "2021"
 [workspace]
 
 [dependencies]
-risc0-zkvm = { version = "2.1.0", default-features = false, features = ['std'] }
+risc0-zkvm = { version = "2.3.1", default-features = false, features = ['std'] }
 amaru-kernel = { git = "https://github.com/pragma-org/amaru.git", rev = "ce4526a230919c8c6be9151b43943c5d1b53b63d" }
 amaru-ledger = { git = "https://github.com/pragma-org/amaru.git", rev = "ce4526a230919c8c6be9151b43943c5d1b53b63d" }

@@ -1,0 +1,10 @@
+[package]
+name = "cardano-proofs-shared"
+edition = "2024"
+version = "0.1.0"
+
+publish = false
+
+[dependencies]
+pallas-network = "0.33.0"
+hex = "0.4.3"
