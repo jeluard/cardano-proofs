@@ -73,7 +73,12 @@ jobs:
                 [ ! -f "$FILE" ] && mkdir -p $(dirname ${FILE}) && echo "{}" > ${FILE} && ln -sf ${FILE} ../../assets/proofs/latest.json
 
                 # Update the JSON with new proof
-                cat <<< $(jq --arg proof ${PROOF} '."${{ matrix.block.number }}".proofs.${{ matrix.prover }}+=$proof' ${FILE}) > ${FILE}
+                if [ -n "$PROOF" ]; then
+                  cat <<< $(jq --arg proof "$PROOF" \
+                    '."${{ matrix.block.number }}".proofs."${{ matrix.prover }}" += [$proof]' "$FILE") > "$FILE"
+                elif
+                  echo "No proof generated for block ${{ matrix.block.number }} by ${{ matrix.prover }}"
+                fi
               shell: bash
 
             - name: Commit changes
