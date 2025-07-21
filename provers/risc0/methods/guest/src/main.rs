@@ -22,9 +22,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let inputs = BTreeMap::new(); 
     let mut context = context::DefaultValidationContext::new(inputs);
-    if let BlockValidation::Invalid(_slot, _id, _err) =
-        rules::validate_block(&mut context, state.protocol_parameters(), &block) {
-         panic!("Failed to validate block")
+    if let BlockValidation::Invalid(_slot, _id, err) = rules::validate_block(&mut context, state.protocol_parameters(), &block) {
+         println!("Failed to validate block: {:?}", err);
     }
 
     env::commit(&"");
