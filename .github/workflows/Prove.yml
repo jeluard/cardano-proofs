@@ -76,7 +76,7 @@ jobs:
                 if [ -n "$PROOF" ]; then
                   cat <<< $(jq --arg proof "$PROOF" \
                     '."${{ matrix.block.number }}".proofs."${{ matrix.prover }}" += [$proof]' "$FILE") > "$FILE"
-                elif
+                else
                   echo "No proof generated for block ${{ matrix.block.number }} by ${{ matrix.prover }}"
                 fi
               shell: bash
