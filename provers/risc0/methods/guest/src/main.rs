@@ -1,19 +1,31 @@
 use std::collections::BTreeMap;
 
-use amaru_kernel::protocol_parameters::ProtocolParameters;
-use amaru_ledger::{context, rules::{self, parse_block}};
+use amaru_kernel::{EraHistory, network::NetworkName, protocol_parameters::GlobalParameters};
+use amaru_ledger::{context, rules::{self, parse_block, block::BlockValidation}, state::State, store::in_memory::MemoryStore};
 use risc0_zkvm::guest::env;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let raw_block: Vec<u8> = env::read();
 
     let block = parse_block(&raw_block[..])?;
+
+    let network = NetworkName::Preprod;
+    let era_history: &EraHistory = network.into();
+
+    let global_parameters: &GlobalParameters = network.into();
+    let state = State::new(
+        MemoryStore {},
+        MemoryStore {},
+        era_history.clone(),
+        global_parameters.clone(),
+    )?;
+
     let inputs = BTreeMap::new(); 
-    let _validity = rules::validate_block(
-        context::DefaultValidationContext::new(inputs),
-        ProtocolParameters::default(),
-        block,
-    );
+    let mut context = context::DefaultValidationContext::new(inputs);
+    if let BlockValidation::Invalid(_slot, _id, _err) =
+        rules::validate_block(&mut context, state.protocol_parameters(), &block) {
+         panic!("Failed to validate block")
+    }
 
     env::commit(&"");
 
